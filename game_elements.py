@@ -58,7 +58,7 @@ class Card:
         self.value = values[rank]
 
     def __str__(self):
-        return self.rank + ' of ' + self.suit
+        return f'{self.rank} of {self.suit}'
 
     def get_suit(self):
         '''Access the suit value.
