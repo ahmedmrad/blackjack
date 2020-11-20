@@ -39,6 +39,9 @@ class Card:
     def get_rank(self):
         return self.rank
 
+    def get_value(self):
+        return self.value
+
 
 class Deck:
     """docstring for Deck"""
@@ -49,26 +52,17 @@ class Deck:
             for rank in ranks:
                 self.all_cards.append(Card(suit, rank))
 
-    def __str__(self):
-        c = '''
-    **************************
-    ***** Cards in decks *****
-    **************************
-
-
-    '''
-        for card in self.all_cards:
-            c = c + '      ' + str(card) + '\n'
-        return c
-
     def __len__(self):
         return len(self.all_cards)
 
     def shuffle(self):
         random.shuffle(self.all_cards)
 
+
+''' better in game
     def deal_card(self):
         return self.all_cards.pop()
+'''
 
 
 class Player():
@@ -78,7 +72,7 @@ class Player():
         self.arg = arg
 
 
-class hand():
+class Hand():
     """docstring for hand"""
 
     def __init__(self, arg):
