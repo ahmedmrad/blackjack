@@ -11,7 +11,7 @@ Todo:
 
 '''
 
-import random
+from random import shuffle
 
 suits = ('Hearts', 'Diamonds', 'Spades', 'Clubs')
 
@@ -43,13 +43,13 @@ class Card:
     Card objects hold the suit, rank and value of the playing card
 
     Args:
-        suit (str): Playing card suit.
-        rank (str): Playing card rank.
+        suit (str) : Playing card suit.
+        rank (str) : Playing card rank.
 
     Attributes:
-        suit (str): Playing card suit.
-        rank (str): Playing card rank.
-        value (int): Playing card value accroding to blackjack rules.
+        suit (str) : Playing card suit.
+        rank (str) : Playing card rank.
+        value (int) : Playing card value accroding to blackjack rules.
     '''
 
     def __init__(self, suit, rank):
@@ -60,36 +60,6 @@ class Card:
     def __str__(self):
         return f'{self.rank} of {self.suit}'
 
-    def get_suit(self):
-        '''Access the suit value.
-
-        This method returns the suit value.
-
-        Returns:
-            suit (str): Playing card suit.
-        '''
-        return self.suit
-
-    def get_rank(self):
-        '''Access the rank value.
-
-        This method returns the rank value
-
-        Returns:
-            rank (str): Playing card rank
-        '''
-        return self.rank
-
-    def get_value(self):
-        '''Access the card value.
-
-        This method returns the card value.
-
-        Returns:
-            value (int): Playing card value
-        '''
-        return self.value
-
 
 class Deck:
     '''Deck class to create the full deck.
@@ -97,7 +67,7 @@ class Deck:
     A deck is constructed and filled with Card objects
 
     Attributes:
-        all_cards (:obj: `list` of :obj: `Card`): deck containing all cards
+        all_cards (:obj: `list` of :obj: `Card`) : deck containing all cards
     '''
 
     def __init__(self):
@@ -114,24 +84,142 @@ class Deck:
 
         This method Shuffles the cards in the deck. The shuffling happens inplace.
         '''
-        random.shuffle(self.all_cards)
+        shuffle(self.all_cards)
 
+    def deal_one_card(self):
+        '''Deal one card
 
-''' better in game
-    def deal_card(self):
+        Deal card from the top of the deck.
+        '''
         return self.all_cards.pop()
-'''
 
+    def deal_two_cards(self):
+        '''Deal two cards
 
-class Player():
-    """docstring for Player"""
+        Deal two cards from the top of the deck.
+        '''
 
-    def __init__(self, arg):
-        self.arg = arg
+        return [self.all_cards.pop() for index in range(2)]
 
 
 class Hand():
-    """docstring for hand"""
+    '''Hand class
 
-    def __init__(self, arg):
+    Hand class hold the dealt cards,
+    store the extra cards if needed and determines
+    the total value of the hand
+
+    Args:
+        name (str) : name of the player who has the hand
+
+    Attributes:
+        hand (list) : list that holds the cards dealt
+        name (str) : name of the player who has the hand
+    '''
+
+    def __init__(self, name):
+        self.hand = []
+        self.name = name
+
+    def add_card(self, new_cards):
+        if type(new_cards) == type([]):
+            self.hand.extend(new_cards)
+        else:
+            self.hand.append(new_cards)
+
+    def __str__(self):
+        list_hand = []
+        if type(self.hand) == type([]):
+            return ' '.join(['| %-2s |' % (i,) for i in self.hand])
+        else:
+            return str(self.hand)
+
+    def get_card_value(self):
+        '''Get card values
+
+        Calculate the total value of the current hand
+        and adjust the ace value according to the total value
+
+        Returns:
+            total_value (int) : total value of the hand
+        '''
+        total_value = 0
+        for card in self.hand:
+            total_value += card.value
+        if total_value < 21:
+            for card in self.hand():
+                if card.rank == 'Ace':
+                    total_value += 10
+        elif total_value > 21:
+            break
+        return total_value
+
+
+class Bank:
+    '''Bank class
+    '''
+
+    def __init__(self, name='dealer', gambling_account=100):
+        self.name = name
+        self.gambling_account = gambling_account
+
+    def __str__(self):
+        pass
+
+    def deposit(self, amount):
+        pass
+
+
+class Player():
+    ''' Player class
+
+    Player class implements players and dealers and the methods each players needs t
+
+    Args:
+        name (str) : name of the player, defaults to dealer
+
+    Attributes:
+        name (str) : name of the player, defaults to dealer
+    '''
+
+    def __init__(self, name='dealer'):
+        self.arg = name
+
+    def full_hand(self):
+        pass
+
+    def show_first_card(self):
+        pass
+
+    def hit(self):
+        '''Add another card
+        '''
+        pass
+
+    def stand(self):
+        '''Take no more card
+        '''
+        pass
+
+    def double_down(self):
+        '''The player is allowed to increase the initial bet up to 100% in exchange for committing to stand after receiving exactly one more card. The additional bet is placed in the betting box next to the original bet.
+        '''
+        pass
+
+    def split(self):
+        '''If the first two cards of a hand have the same value, the player can split them into two hands, by moving a second bet equal to the first into an area outside the betting box. The dealer separates the two cards and draws an additional card on each, placing one bet with each hand. the hands are treated as independent new hands, with the player winning or losing their wager separately for each hand.
+        '''
+        pass
+
+    def surrender(self):
+        '''When the player surrenders, the house takes half the player's bet and returns the other half to the player. Only when dealer gets a blackjack
+        '''
+        pass
+
+
+class Game:
+    """docstring for ClassName"""
+
+    def __init__(self,):
+        def __init__()
         self.arg = arg
