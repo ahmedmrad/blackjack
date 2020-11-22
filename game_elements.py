@@ -37,7 +37,7 @@ values = {
 }
 
 
-class Card:
+class Card():
     '''Card class to create a single instance of card
 
     Card objects hold the suit, rank and value of the playing card
@@ -61,7 +61,7 @@ class Card:
         return f'{self.rank} of {self.suit}'
 
 
-class Deck:
+class Deck():
     '''Deck class to create the full deck.
 
     A deck is constructed and filled with Card objects
@@ -109,19 +109,19 @@ class Hand():
     store the extra cards if needed and determines
     the total value of the hand
 
-    Args:
-        name (str) : name of the player who has the hand
-
     Attributes:
         hand (list) : list that holds the cards dealt
-        name (str) : name of the player who has the hand
     '''
 
-    def __init__(self, name):
+    def __init__(self):
         self.hand = []
-        self.name = name
 
     def add_card(self, new_cards):
+        ''' Add card method
+
+        Args:
+            new_cards ()
+        '''
         if type(new_cards) == type([]):
             self.hand.extend(new_cards)
         else:
@@ -147,33 +147,69 @@ class Hand():
         for card in self.hand:
             total_value += card.value
         if total_value < 21:
-            for card in self.hand():
+            for card in self.hand:
                 if card.rank == 'Ace':
                     total_value += 10
-        elif total_value > 21:
-            break
+                if total_value > 21:
+                    break
         return total_value
 
 
-class Bank:
+class Bank():
     '''Bank class
+
+    Bank class instantiates the amount of mony available for
+    both the dealer and the player. The class comes with a deposit and widthraw method.
+
+    Args:
+        name (str) : name of the person's account, the dealer's bank or the player's bank.
+        gambling_account (int) = value of money available for gambling
+
+    Attributes:
+        name (str) : name of the person's account, the dealer's bank or the player's bank.
+        gambling_account (int) = value of money available for gambling
     '''
 
-    def __init__(self, name='dealer', gambling_account=100):
+    def __init__(self, name='dealer', gambling_account=100, **kwargs):
         self.name = name
         self.gambling_account = gambling_account
+        super().__init__(**kwargs)
 
     def __str__(self):
-        pass
+        return f'The {self.name} has {self.gambling_account} $ in the bank.'
 
     def deposit(self, amount):
-        pass
+        '''deposit method
+
+        Deposit the bets to the gambling account.
+
+        Args:
+            amount (int) : amount to be deposited
+        '''
+        self.gambling_account += amount
+
+    def widthraw(self, amount):
+        '''widthraw method
+
+        Widthraw money if bet is lost.
+
+        Args:
+            amount (int) : amount to be deposited
+        '''
+        self.gambling_account -= amount
 
 
-class Player():
+class Player(Bank, Hand):
+
+    def __init__(self, name, gambling_account, **kwargs):
+        super().__init__(name=name, gambling_account=gambling_account, **kwargs)
+        Hand.__init__(self)
+
+
+class PlayerMoves(Hand, Bank, Dealer):
     ''' Player class
 
-    Player class implements players and dealers and the methods each players needs t
+    Player class implements players and dealers and the methods each players needs
 
     Args:
         name (str) : name of the player, defaults to dealer
@@ -182,14 +218,9 @@ class Player():
         name (str) : name of the player, defaults to dealer
     '''
 
-    def __init__(self, name='dealer'):
-        self.arg = name
+    def __init__(self, name='player'):
 
-    def full_hand(self):
-        pass
-
-    def show_first_card(self):
-        pass
+        self.name = name
 
     def hit(self):
         '''Add another card
