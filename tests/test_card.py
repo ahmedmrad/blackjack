@@ -1,6 +1,6 @@
 import unittest
 import copy
-from game_elements import Card, Deck
+from card import Card, Deck
 
 
 class TestCard(unittest.TestCase):
@@ -100,17 +100,40 @@ class TestHand(unittest.TestCase):
 
     def setUp(self):
         hand = Hand()
-        (card_1, card_2, card_2) = (Cards('Diamonds', 'Two'),
-                                    Cards('Spades', 'King'), Cards('Clubs', 'Ace'))
+        (card_1, card_2, card_3) = (Card('Diamonds', 'Two' card_4, card_5),
+                                    Card('Spades', 'King'), Card('Clubs', 'Ace'), 'this is not a card', 10,)
 
     def tearDown(self):
-        pass
+        del hand
+        del card_1
+        del card_2
+        del card_3
 
-    def test_hand_hand_instance_is_list
+    def test_hand_add_new_card_adds_one_card(self):
+        self.hand.add_card(card_1)
+        self.assertEquals(len(
+            self.hand), 1, 'Add card is not working properly. It should contain one element.')
 
+    def test_hand_add_new_card_adds_two_or_more_cards(self):
+        self.hand.add_card([card_1, card_2, card_3])
+        self.assertGreaterEqual(len(
+            self.hand), 2, 'Add card is not working properly. It should contain two or more elements.')
 
-class TestPlayer(unittest.TestCase):
-    pass
+    def test_hand_one_card_added_is_list(self):
+        self.hand.add_card(card_1)
+        self.assertIsInstance(type(
+            hand.hand), list, 'Hand is not composed of list of cards. Check if the add_card method instantiate an empty list and that proper appending methods are implemented.')
+
+    def test_hand_two_or_more_card_hand_is_list(self):
+        self.hand.add_card([card_1, card_2, card_3])
+        self.assertIsInstance(type(
+            hand.hand), list, 'Hand is not composed of list of cards. Check if the add_card method instantiate an empty list and that proper appending methods are implemented.')
+
+    def test_hand_card_added_is_card_instance(self):
+        self.hand.add_card([card_1, card_2, card_3])
+        for elem in self.hand.hand:
+            self.assertIsInstance(
+                elem, Card, 'Hand does not contain Card objects. Check if you are adding card objects')
 
 
 if __name__ == '__main__':
