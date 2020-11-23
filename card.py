@@ -93,6 +93,9 @@ class Deck():
         '''Deal one card
 
         Deal card from the top of the deck.
+
+        Returns:
+            (Card) : Returns card object.
         '''
         return self.all_cards.pop()
 
@@ -100,32 +103,29 @@ class Deck():
         '''Deal two cards
 
         Deal two cards from the top of the deck.
+
+            (list) : Returns list of two card objects.
         '''
 
         return [self.all_cards.pop() for index in range(2)]
 
 
-# reshuflfe,
-
-
 def card_object_check(method):
 
     @wraps(method)
-    def inner(ref, new_cards=None):
+    def inner(self, new_cards=None):
         if type(new_cards) == list:
             if any(not isinstance(elem, Card) for elem in new_cards):
-                raise TypeError(
-                    f'List objects must be of type Card not {type(elem)}.'
-                )
+                raise TypeError('List objects must be of type Card.')
             else:
-                return method(ref, new_cards)
+                return method(self, new_cards)
         else:
             if not isinstance(new_cards, Card):
                 raise TypeError(
                     f'List objects must be of type Card not {type(new_cards)}.'
                 )
             else:
-                return method(ref, new_cards)
+                return method(self, new_cards)
 
     return inner
 
