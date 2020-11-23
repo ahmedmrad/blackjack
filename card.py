@@ -13,8 +13,6 @@ Todo:
 
 from random import shuffle
 from functools import wraps
-import pyinputplus as pyip
-import sys
 
 suits = ('Hearts', 'Diamonds', 'Spades', 'Clubs')
 
@@ -190,4 +188,6 @@ class Hand():
             for card in self.hand:
                 if card.rank == 'Ace':
                     total_value += 10
+        elif total_value > 21:
+            raise ValueError('Illegal hand, value of hand more than 21. ')
         return total_value

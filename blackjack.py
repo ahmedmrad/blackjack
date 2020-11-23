@@ -1,3 +1,6 @@
+import pyinputplus as pyip
+import sys
+
 BLACK_JACK = 21
 '''int: Black jack module level variable
 

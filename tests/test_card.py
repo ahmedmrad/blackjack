@@ -100,14 +100,17 @@ class TestHand(unittest.TestCase):
 
     def setUp(self):
         hand = Hand()
-        (card_1, card_2, card_3) = (Card('Diamonds', 'Two' card_4, card_5),
-                                    Card('Spades', 'King'), Card('Clubs', 'Ace'), 'this is not a card', 10,)
+        (card_1, card_2, card_3) = (Card('Diamonds', 'Two' card_4, card_5, card_6),
+                                    Card('Spades', 'King'), Card('Clubs', 'Ace'), Card('Spades', 'Queen'), 'this is not a card', 10,)
 
     def tearDown(self):
         del hand
         del card_1
         del card_2
         del card_3
+        del card_4
+        del card_5
+        del card_6
 
     def test_hand_add_new_card_adds_one_card(self):
         self.hand.add_card(card_1)
@@ -134,6 +137,21 @@ class TestHand(unittest.TestCase):
         for elem in self.hand.hand:
             self.assertIsInstance(
                 elem, Card, 'Hand does not contain Card objects. Check if you are adding card objects')
+
+    def test_hand_get_card_value_value_less_than_twenty_one(self):
+        self.hand.add_card([card_1, card_2])
+        self.assertLess(self.hand.get_card_value(
+        ), 21, 'Hand value not less than 21. Get card value method is not calculating the hand value right.')
+
+    def test_hand_get_card_value_has_ace(self):
+        self.hand.add_card([card_2, card_3])
+        self.assertEquals(hand.test_card_get_value(
+        ), 21, 'Hand value not 21. Get card value method is not calculating right.')
+
+    def test_hand_get_card_value_value_more_than_twenty_one(self):
+        self.hand.add_card([card_1, card_2, card_4])
+        self.assertRaises(self.hand.get_card_value(
+        ), ValueError, 'Hand value superior to 21. Get card value mehtod is allowing a hand to be more than 21. That is illegal in blackjack rules.')
 
 
 if __name__ == '__main__':
