@@ -5,6 +5,8 @@ BLACK_JACK = 21
 '''int: Black jack module level variable
 
 '''
+
+
 class Player():
     '''Player class
 
@@ -21,6 +23,7 @@ class Player():
         minimum_bet (int) : Minimun bet that the player is allowed to make.
         hand (Hand) : Hand object.
     '''
+
     def __init__(self, name='player', cash_balance=100):
         self.name = name
         self.cash_balance = cash_balance
@@ -36,7 +39,7 @@ class Player():
         '''
         print('The {} has {} $ in the bank.'.join(self.name, self.cash_balance))
 
-    def bet(self, bet_amount):
+    def bet(self):
         '''Bet a certain ammount
 
         Bet a certain ammount during a game of Blakcjack according to one's
@@ -52,6 +55,7 @@ class Player():
             if self.cash_balance > bet_amount:
                 self.cash_balance -= bet_amount
                 print('Les jeux sont faits')
+                return bet_amount
             else:
                 print('You no longet have money in you balance. Goodbye.')
                 sys.exit()
@@ -88,6 +92,13 @@ class Dealer():
         self.deck = Deck(self.number_of_decks)
         self.hand = Hand()
 
+    def match(self, bet_amount):
+        pass
+    def collect_card(self):
+        pass
+
+    def discard_card(self):
+        pass
 
 class Game:
     """docstring for ClassName"""

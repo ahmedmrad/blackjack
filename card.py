@@ -1,13 +1,12 @@
 '''Card
 
-Card modules contains most of the classes in order to play a blackjack game
+Card module contains most of the classes in order to create a deck containing cards
+and a proper hand in blackjack.
 
 Attributes:
     suits (tuple): playing card suit values, tuple of str
     ranks (tuple): playing card rank, tuple of str
     values (dict): playing card rank and their values, keys are playing card rank and values are playing card values in a blackjack game
-
-Todo:
 
 '''
 
@@ -68,7 +67,7 @@ class Deck():
     A deck is constructed and filled with Card objects
 
     Attributes:
-        all_cards (:obj: `list` of :obj: `Card`) : deck containing all cards
+        all_cards (list) : List containing card objects
     '''
 
     def __init__(self, number_of_decks=1):
@@ -188,6 +187,4 @@ class Hand():
             for card in self.hand:
                 if card.rank == 'Ace':
                     total_value += 10
-        elif total_value > 21:
-            raise ValueError('Illegal hand, value of hand more than 21. ')
         return total_value

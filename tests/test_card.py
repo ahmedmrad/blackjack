@@ -208,7 +208,10 @@ class TestHand(unittest.TestCase):
 
     def test_hand_get_card_value_value_more_than_twenty_one(self):
         self.hand.add_card([self.card_1, self.card_2, self.card_4])
-        self.assertRaises(ValueError, self.hand.get_card_value)
+        self.assertGreater(
+            self.hand.get_card_value(), 21,
+            'Hand value is not greater than 21. Get card calue not calculating hand value right.'
+        )
 
 
 if __name__ == '__main__':
