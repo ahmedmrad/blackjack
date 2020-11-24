@@ -34,9 +34,11 @@ class TestDeck(unittest.TestCase):
 
     def setUp(self):
         self.deck = Deck()
+        self.deck_multiple = Deck(10)
 
     def tearDown(self):
         del self.deck
+        del self.deck_multiple
 
     def test_deck_all_cards_is_list(self):
         self.assertIsInstance(
@@ -55,6 +57,12 @@ class TestDeck(unittest.TestCase):
         self.assertEqual(
             len(self.deck.all_cards), 52,
             'Deck does not have 52 cards. Check the suits, ranks and values, global variables for any discrepency.'
+        )
+
+    def test_deck_imlements_multiple(sefl):
+        self.assertEqual(
+            len(self.self.deck_multiple), 520,
+            'Multiple decks not implemented.'
         )
 
     def test_deck_shuffle_different_than_original_deck(self):
