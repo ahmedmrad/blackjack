@@ -15,6 +15,7 @@ import sys
 from card import Card, Deck, card_object_check, Hand
 
 BLACK_JACK = 21
+BLACK_JACK_PAYOUT = 3 / 2
 
 
 class Player():
@@ -41,14 +42,21 @@ class Player():
         self.minimum_bet = 10
         self.hand = Hand()
 
-    def get_balance(self):
-        '''Get balance method
+    def show_balance(self):
+        '''Show balance method
 
-        Get balance methods prints the player's nameand cash balance.
+        Show balance methods prints the player's nameand cash balance.
         '''
         print(
             'The {} has {} $ in the bank.'.join(self.name, self.cash_balance)
         )
+
+    def get_balance(self):
+        '''Get balance
+
+        Get balance returns the player's cash balance
+        '''
+        return self.cash_balance
 
     def bet(self):
         '''Bet a certain ammount
@@ -87,6 +95,16 @@ class Player():
         else:
             return False
 
+    def add_to_cash_balance(self, bet_amount):
+        '''Add to cash balance
+
+        Add to cash balance method add bet winnings to the player's cash balance.
+
+        Args:
+            bet_amount (int) : winning bet amount
+        '''
+        self.cash_balance += bet_amount
+
 
 class Dealer():
     ''' Dealer class
@@ -112,10 +130,10 @@ class Dealer():
         self.deck = Deck(self.number_of_decks)
         self.hand = Hand()
 
-    def get_balance(self):
-        '''Get balance method
+    def show_balance(self):
+        '''Show balance method
 
-        Get balance methods prints the dealer's name and cash balance.
+        Show balance methods prints the dealer's name and cash balance.
         '''
         print(
             'The {} has {} $ in the bank.'.join(self.name, self.cash_balance)
@@ -129,6 +147,19 @@ class Dealer():
             print('The bank went bust.')
             sys.exit()
 
+    def is_soft_17(self):
+        '''Is soft 17
+
+        Is soft 17 method checks if the dealer's hand is a soft 17 or no.
+
+        Returns:
+            (bool) : True if dealer cards value is 17, False if otherwise
+        '''
+        if self.hand.get_card_value() < 17:
+            return True
+        else:
+            return False
+
     def collect_card(self, dealer_hand, player_hand):
         '''Collect card
 
@@ -139,31 +170,35 @@ class Dealer():
             player_hand (list) : List of Card objects.
 
         Returns:
-            collected_cards (list) : List of Card objects.
+            round_cards (list) : List of Card objects.
         '''
-        collected_cards = []
-        collected_cards.extend(dealer_hand.hand + player_hand.hand)
-        return collected_card
+        round_cards = []
+        round_cards.extend(dealer_hand.hand + player_hand.hand)
+        return round_cards
 
     @card_object_check
-    def return_cards_to_deck(self, collected_cards):
+    def return_cards_to_deck(self, discard_pot):
         '''Return cards to deck
 
-        Method that returns collected cards to deck.
+        Method that returns collected round cards to deck.
 
         Args:
-            collected_cards (list) : List of card objects made of the player's and the dealer's respective hands.
+            discard_card (list) : List of card objects made of the player's and the dealer's respective hands.
         '''
-        if type(new_cards) == type([]):
-            self.deck.all_cards.extend(new_cards)
+        if type(discard_pot) == type([]):
+            self.deck.all_cards.extend(discard_pot)
         else:
-            self.deck.all_cards.append(new_cards)
+            self.deck.all_cards.append(discard_pot)
 
+    def add_to_cash_balance(self, bet_amount):
+        '''Add to cash balance
 
-'''
-    def discard_card(self,cards_collected):
-        pass
-'''
+        Add to cash balance method add bet winnings to the Dealer's cash balance.
+
+        Args:
+            bet_amount (int) : winning bet amount
+        '''
+        self.cash_balance += bet_amount
 
 
 class Game():
@@ -181,6 +216,134 @@ class Game():
     def __init__(self):
         self.player = Player('player_1', 100)
         self.dealer = Dealer(number_of_decks=1)
-        self.discard = []
+        self.discard_pot = []
 
-    def play
+    def player_balance(self):
+        '''Player balance
+
+        Player balance method
+
+        Returns:
+            (int) : Cash balance of player.
+        '''
+        print('Welcome to blackjack: ')
+        self.player.show_balance()
+        return self.player.get_balance()
+
+    def bets(self):
+        '''Bets
+
+        Bets method, both player and dealer make their bets.
+
+        Returns:
+            player_bet (int) : player bet amount
+            dealer_bet (int) : dealer bet amount
+        '''
+        player_bet = self.player.bet()
+        dealer_bet = self.dealer.match_bet()
+        return player_bet, dealer_bet
+
+    def blackjack_payout(self, dealer_bet):
+        '''Blackjack payout
+
+        Blackjack payout method readjusts the dealer cash balance and gives out the proper payout.
+
+        Args:
+            dealer_bet (int) : Original matched bet.
+        Returns:
+            blackjack_payout (int) : Blackjack payout following 3:2 rule.
+         '''
+            dealer_bet += self.dealer.match_bet(0.5 * dealer_bet)
+            return int(dealer_bet)
+
+    def deal_cards(self):
+        ''' Deal card
+
+        Deal card method distributes cards to both player and dealer hands
+        '''
+        print('The dealer is dealing the cards.')
+        self.dealer.deck.shuffle()
+        self.player.hand.add_card(self.dealer.deck.deal_two_cards())
+        self.dealer.hand.add_card(self.dealer.deck(deal_two_cards()))
+
+    def adjust_player_hand(self):
+        '''Adjust hand
+
+        Adjust hand method, prompts the player to hit or stay and check and adjusts cards accordingly.
+        '''
+        hit = self.player.hit()
+        if hit == True:
+            self.player.add_card(self.dealer.deal_on())
+
+    def adjust_dealer_hand(self):
+        '''Adjust dealer hand
+
+        Adjust dealer hand method adjusts dealer hand if soft 17 is true.
+        '''
+        if is_soft_17() == True:
+            self.dealer.add_card(dealer.deck.deal_one_card())
+
+    def blackjack_payouts(self, player_bet, dealer_bet):
+        '''Blackjack
+
+        Blackjack logic handler method. Handles most of the game logic.
+
+        Args:
+            player_bet (int) : Player bet amount.
+            dealer_bet (int) : Dealer bet amount.
+        '''
+        if (self.player.hand.get_card_value() == BLACK_JACK) and (self.dealer.hand.get_card_value != BLACK_JACK):
+            print('Blackjack, player wins')
+            dealer_bet_updated = self.dealer.blackjack_payout(dealer_bet)
+            self.player.add_to_cash_balance(dealer_bet_updated)
+        elif (self.player.get_card_value() > BLACK_JACK):
+            print('Bust, dealer wins.')
+            self.dealer.add_to_cash_balance(player_bet + dealer_bet)
+        elif(self.player.get_card_value() < BLACK_JACK) and (self.dealer.get_card_value() > BLACK_JACK):
+            print('Dealer bust. Player wins.')
+            self.player.add_to_cash_balance(player_bet, dealer_bet)
+        elif (self.player.get_card_value() < BLACK_JACK) and (self.player.get_card_value() > self.dealer.get_card_value()):
+            print('Player wins.')
+            self.player.add_to_cash_balance(player_bet, dealer_bet)
+        elif (self.player.get_card_value() < BLACK_JACK) and (self.dealer.get_card_value() > self.player.get_card_value()):
+            print('Dealer wins.')
+            self.dealer.add_to_cash_balance(player_bet + dealer_bet)
+        elif self.player.get_card_value() == self.dealer.get_card_value():
+            print('Tie, nobody wins')
+            self.player.add_to_cash_balance()
+#
+
+    def discard_card(self):
+        '''Discard card
+
+        Discard card method
+        '''
+        round_cards = self.dealer.collect_card(
+            self.player.hand, self.dealer.hand)
+        self.discard_pot.extend(round_cards)
+        return discard_pot
+
+    def return_cards_to_deck_and_reshuffle(self, discard_pot):
+        '''Return cards to deck and reshuffle
+
+        Return cards to deck and reshuffle method
+
+        Args:
+            discard_pot (list) : List of Card objects.
+        '''
+        self.dealer.return_cards_to_deck(discard_pot)
+        self.dealer.deck.shuffle()
+
+    def exit_game(self):
+        '''Exit game
+
+        Exit game method prompts player if he wants to continue game of not.
+        Returns:
+            (bool) : True if exit game, False if keep on playing
+        '''
+        exit_game = pyip.inputMenu(
+            ['Exit game', 'Keep on playing'], numbered=True)
+        if exit_game == 'Exit game':
+            return True
+        else:
+            return False

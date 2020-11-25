@@ -164,7 +164,7 @@ class Hand():
     def __str__(self):
         list_hand = []
         if type(self.hand) == type([]):
-            return ' '.join(['| %-2s |' % (i, ) for i in self.hand])
+            return ''.join(['| %-2s |' % (i, ) for i in self.hand])
         else:
             return str(self.hand)
 
