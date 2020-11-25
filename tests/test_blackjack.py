@@ -148,9 +148,17 @@ class TestGame(unittest.TestCase):
 
     def setUp(self):
         self.game = Game()
+        self.game_10_decks = Game(number_of_decks=10)
 
     def tearDown(self):
         del self.game
+        del self.game_10_decks
+
+    def test_game_blackjack_check_numbers_of_decks(self):
+        self.assertEqual(
+            len(self.game_10_decks.dealer.deck), 520,
+            'Number of decks is not correct.'
+        )
 
     def test_game_blackjack_payout_dealer_bet_float(self):
         self.assertEqual(

@@ -12,7 +12,6 @@ Todos:
 import pyinputplus as pyip
 import sys
 from card import Card, Deck, card_object_check, Hand
-import copy
 
 BLACK_JACK = 21
 BLACK_JACK_PAYOUT = 3 / 2
@@ -216,7 +215,6 @@ class Game():
         player (Player) : Player instance.
         dealer (Dealer) : Dealer instance.
         discard_pot (list) : Empty list to store current game round hands.
-        player_cash_balance_orginal (int) : Copy of original player cash balance.
     '''
 
     def __init__(
@@ -233,7 +231,6 @@ class Game():
         self.player = Player(name_player, player_cash_balance)
         self.dealer = Dealer(number_of_decks=number_of_decks)
         self.discard_pot = []
-        self.player_cash_balance_orginal = copy.copy(player_cash_balance)
 
     def welcome(self):
         '''Player balance
