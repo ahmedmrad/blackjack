@@ -206,14 +206,17 @@ class Game():
 
     Game Class
 
-    Args:
-
 
     Attributes:
-
+        player (Player) : Player instance
+        dealer (Dealer) : Dealer instance
     '''
 
-    def __init__(self):
+    def __init__(self, name_player, player_cash_balance, dealer_cash_balance, number_of_decks):
+        self.name_player = name_player
+        self.player_cash_balance = player_cash_balance
+        self.dealer_cash_balance = dealer_cash_balance
+        self.number_of_decks = number_of_decks
         self.player = Player('player_1', 100)
         self.dealer = Dealer(number_of_decks=1)
         self.discard_pot = []
