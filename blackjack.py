@@ -5,14 +5,14 @@ Blackjack module defines a player, dealer and game class. Most of the game logic
 Attributes:
     BLACK_JACK (int) : Blackjack score value of 21
 
-todos:
-    - Make sure some class instance only take values superior to minimun.
-    - Write the edge test cases
+Todos:
+    - Add insurance, splitting, doubling down
 '''
 
 import pyinputplus as pyip
 import sys
 from card import Card, Deck, card_object_check, Hand
+import copy
 
 BLACK_JACK = 21
 BLACK_JACK_PAYOUT = 3 / 2
@@ -47,9 +47,7 @@ class Player():
 
         Show balance methods prints the player's nameand cash balance.
         '''
-        print(
-            'The {} has {} $ in the bank.'.join(self.name, self.cash_balance)
-        )
+        print(f'The {self.name} has {self.cash_balance} $ in the bank.')
 
     def get_balance(self):
         '''Get balance
@@ -68,7 +66,9 @@ class Player():
             bet_amount (int) : amount to be betted
         '''
 
-        bet_amount = pyip.inputNum('Faites vos jeux: ', min=self.minimum_bet)
+        bet_amount = pyip.inputNum(
+            'Faites vos jeux: ', min=self.minimum_bet, max=self.maximum_bet
+        )
         if bet_amount < self.maximum_bet:
             if self.cash_balance > bet_amount:
                 self.cash_balance -= bet_amount
@@ -78,6 +78,15 @@ class Player():
                 print('You no longet have money in you balance. Goodbye.')
                 sys.exit()
 
+    def show_player_card_values(self):
+        '''Show player card values
+
+        Show player card values method
+        '''
+        print('Those are the cards you have: ')
+        print(self.hand)
+        print(f'Your hand value is {self.hand.get_card_value()}.')
+
     def hit(self):
         '''Hit method
 
@@ -86,9 +95,6 @@ class Player():
         Returns:
             (bool) : True if hit False if Stay
         '''
-        print('Those are the cards you have: ')
-        print(self.hand)
-        print('Your had value is {}.'.join(self.hand.get_card_value()))
         hit_stay = pyip.inputMenu(['hit', 'stay'], numbered=True)
         if hit_stay == 'hit':
             return True
@@ -123,7 +129,7 @@ class Dealer():
         hand (Hand) : Hand object
     '''
 
-    def __init__(self, name='dealer', cash_balance=1000, number_of_decks=1):
+    def __init__(self, name='dealer', cash_balance=100, number_of_decks=1):
         self.name = name
         self.cash_balance = cash_balance
         self.number_of_decks = number_of_decks
@@ -135,14 +141,21 @@ class Dealer():
 
         Show balance methods prints the dealer's name and cash balance.
         '''
-        print(
-            'The {} has {} $ in the bank.'.join(self.name, self.cash_balance)
-        )
+        print(f'The {self.name} has {self.cash_balance} $ in the bank.')
+
+    def show_dealer_card_values(self):
+        '''Show player card values
+
+        Show player card values method
+        '''
+        print('Dealer cards: ')
+        print(self.hand)
+        print(f'Dealer hand value is {self.hand.get_card_value()}.')
 
     def match_bet(self, bet_amount):
-        if self.cash_balance > bet_amount:
-            self.cash_balance -= bet_amount
-            return bet_amount
+        if self.cash_balance >= abs(bet_amount):
+            self.cash_balance -= abs(bet_amount)
+            return abs(bet_amount)
         else:
             print('The bank went bust.')
             sys.exit()
@@ -155,26 +168,10 @@ class Dealer():
         Returns:
             (bool) : True if dealer cards value is 17, False if otherwise
         '''
-        if self.hand.get_card_value() < 17:
+        if (self.hand.get_card_value() < 17) and (len(self.hand) <= 3):
             return True
         else:
             return False
-
-    def collect_card(self, dealer_hand, player_hand):
-        '''Collect card
-
-        Collect card method collects cards from both the player's and the dealer's respective hands.
-
-        Args:
-            dealer_hand (list) : List of Card objects.
-            player_hand (list) : List of Card objects.
-
-        Returns:
-            round_cards (list) : List of Card objects.
-        '''
-        round_cards = []
-        round_cards.extend(dealer_hand.hand + player_hand.hand)
-        return round_cards
 
     @card_object_check
     def return_cards_to_deck(self, discard_pot):
@@ -198,7 +195,7 @@ class Dealer():
         Args:
             bet_amount (int) : winning bet amount
         '''
-        self.cash_balance += bet_amount
+        self.cash_balance += abs(bet_amount)
 
 
 class Game():
@@ -206,32 +203,45 @@ class Game():
 
     Game Class
 
-
+    Args:
+        name_player (str) : Player name.
+        player_cash_balance (int) : Player cash balance at start of game.
+        dealer_cash_balance (int) : Cash balance at start of game.
+        number_of_decks (int) : Number of decks to be played with.
     Attributes:
-        player (Player) : Player instance
-        dealer (Dealer) : Dealer instance
+        name_player (str) : Player name.
+        player_cash_balance (int) : Player cash balance at start of game.
+        dealer_cash_balance (int) : Cash balance at start of game.
+        number_of_decks (int) : Number of decks to be played with.
+        player (Player) : Player instance.
+        dealer (Dealer) : Dealer instance.
+        discard_pot (list) : Empty list to store current game round hands.
+        player_cash_balance_orginal (int) : Copy of original player cash balance.
     '''
 
-    def __init__(self, name_player, player_cash_balance, dealer_cash_balance, number_of_decks):
+    def __init__(
+        self,
+        name_player='player',
+        player_cash_balance=100,
+        dealer_cash_balance=100,
+        number_of_decks=1
+    ):
         self.name_player = name_player
         self.player_cash_balance = player_cash_balance
         self.dealer_cash_balance = dealer_cash_balance
         self.number_of_decks = number_of_decks
-        self.player = Player('player_1', 100)
-        self.dealer = Dealer(number_of_decks=1)
+        self.player = Player(name_player, player_cash_balance)
+        self.dealer = Dealer(number_of_decks=number_of_decks)
         self.discard_pot = []
+        self.player_cash_balance_orginal = copy.copy(player_cash_balance)
 
-    def player_balance(self):
+    def welcome(self):
         '''Player balance
 
         Player balance method
-
-        Returns:
-            (int) : Cash balance of player.
         '''
         print('Welcome to blackjack: ')
         self.player.show_balance()
-        return self.player.get_balance()
 
     def bets(self):
         '''Bets
@@ -243,7 +253,7 @@ class Game():
             dealer_bet (int) : dealer bet amount
         '''
         player_bet = self.player.bet()
-        dealer_bet = self.dealer.match_bet()
+        dealer_bet = self.dealer.match_bet(player_bet)
         return player_bet, dealer_bet
 
     def blackjack_payout(self, dealer_bet):
@@ -256,8 +266,9 @@ class Game():
         Returns:
             blackjack_payout (int) : Blackjack payout following 3:2 rule.
          '''
-            dealer_bet += self.dealer.match_bet(0.5 * dealer_bet)
-            return int(dealer_bet)
+        dealer_bet = abs(dealer_bet)
+        dealer_bet += self.dealer.match_bet(0.5 * dealer_bet)
+        return int(dealer_bet)
 
     def deal_cards(self):
         ''' Deal card
@@ -267,7 +278,7 @@ class Game():
         print('The dealer is dealing the cards.')
         self.dealer.deck.shuffle()
         self.player.hand.add_card(self.dealer.deck.deal_two_cards())
-        self.dealer.hand.add_card(self.dealer.deck(deal_two_cards()))
+        self.dealer.hand.add_card(self.dealer.deck.deal_two_cards())
 
     def adjust_player_hand(self):
         '''Adjust hand
@@ -276,17 +287,18 @@ class Game():
         '''
         hit = self.player.hit()
         if hit == True:
-            self.player.add_card(self.dealer.deal_on())
+            self.player.hand.add_card(self.dealer.deck.deal_one_card())
+            self.player.show_player_card_values()
 
     def adjust_dealer_hand(self):
         '''Adjust dealer hand
 
         Adjust dealer hand method adjusts dealer hand if soft 17 is true.
         '''
-        if is_soft_17() == True:
-            self.dealer.add_card(dealer.deck.deal_one_card())
+        while self.dealer.is_soft_17() == True:
+            self.dealer.hand.add_card(self.dealer.deck.deal_one_card())
 
-    def blackjack_payouts(self, player_bet, dealer_bet):
+    def blackjack_result(self, player_bet, dealer_bet):
         '''Blackjack
 
         Blackjack logic handler method. Handles most of the game logic.
@@ -295,36 +307,63 @@ class Game():
             player_bet (int) : Player bet amount.
             dealer_bet (int) : Dealer bet amount.
         '''
-        if (self.player.hand.get_card_value() == BLACK_JACK) and (self.dealer.hand.get_card_value != BLACK_JACK):
+        if (self.player.hand.get_card_value() == BLACK_JACK
+            ) and (self.dealer.hand.get_card_value() == BLACK_JACK):
+            print('Tie, nobody wins')
+            self.player.add_to_cash_balance(player_bet)
+            self.dealer.add_to_cash_balance(dealer_bet)
+        elif (
+            self.player.hand.get_card_value()
+            == self.dealer.hand.get_card_value()
+        ) and self.player.hand.get_card_value() <= 21:
+            print('Tie, nobody wins')
+            self.player.add_to_cash_balance(player_bet)
+            self.dealer.add_to_cash_balance(dealer_bet)
+        elif (self.player.hand.get_card_value() == BLACK_JACK
+              ) and (self.dealer.hand.get_card_value != BLACK_JACK):
             print('Blackjack, player wins')
-            dealer_bet_updated = self.dealer.blackjack_payout(dealer_bet)
-            self.player.add_to_cash_balance(dealer_bet_updated)
-        elif (self.player.get_card_value() > BLACK_JACK):
-            print('Bust, dealer wins.')
+            dealer_bet_updated = self.blackjack_payout(dealer_bet)
+            self.player.add_to_cash_balance(dealer_bet_updated + player_bet)
+        elif (self.player.hand.get_card_value() > BLACK_JACK):
+            print('Player bust, Dealer wins.')
             self.dealer.add_to_cash_balance(player_bet + dealer_bet)
-        elif(self.player.get_card_value() < BLACK_JACK) and (self.dealer.get_card_value() > BLACK_JACK):
+        elif (self.player.hand.get_card_value() < BLACK_JACK
+              ) and (self.dealer.hand.get_card_value() >= BLACK_JACK):
             print('Dealer bust. Player wins.')
-            self.player.add_to_cash_balance(player_bet, dealer_bet)
-        elif (self.player.get_card_value() < BLACK_JACK) and (self.player.get_card_value() > self.dealer.get_card_value()):
+            self.player.add_to_cash_balance(player_bet + dealer_bet)
+        elif (self.player.hand.get_card_value() < BLACK_JACK) and (
+            self.player.hand.get_card_value() >
+            self.dealer.hand.get_card_value()
+        ):
             print('Player wins.')
-            self.player.add_to_cash_balance(player_bet, dealer_bet)
-        elif (self.player.get_card_value() < BLACK_JACK) and (self.dealer.get_card_value() > self.player.get_card_value()):
+            self.player.add_to_cash_balance(player_bet + dealer_bet)
+        elif (self.player.hand.get_card_value() < BLACK_JACK
+              ) and (self.dealer.hand.get_card_value() < BLACK_JACK) and (
+                  self.dealer.hand.get_card_value() >
+                  self.player.hand.get_card_value()
+              ):
             print('Dealer wins.')
             self.dealer.add_to_cash_balance(player_bet + dealer_bet)
-        elif self.player.get_card_value() == self.dealer.get_card_value():
-            print('Tie, nobody wins')
-            self.player.add_to_cash_balance()
-#
 
-    def discard_card(self):
-        '''Discard card
+    def collect_and_discard_card(self):
+        '''Collect card
 
-        Discard card method
+        Collect card method collects cards from both the player's and the dealer's respective hands and puts them in the discard bin.
+
+        Returns:
+            (list) : List of Card objects.
         '''
-        round_cards = self.dealer.collect_card(
-            self.player.hand, self.dealer.hand)
-        self.discard_pot.extend(round_cards)
-        return discard_pot
+
+        round_card_player = [
+            self.player.hand.hand.pop()
+            for index in range(len(self.player.hand))
+        ]
+        round_card_dealer = [
+            self.dealer.hand.hand.pop()
+            for index in range(len(self.dealer.hand))
+        ]
+        self.discard_pot.extend(round_card_player + round_card_dealer)
+        return self.discard_pot
 
     def return_cards_to_deck_and_reshuffle(self, discard_pot):
         '''Return cards to deck and reshuffle
@@ -334,7 +373,7 @@ class Game():
         Args:
             discard_pot (list) : List of Card objects.
         '''
-        self.dealer.return_cards_to_deck(discard_pot)
+        self.dealer.return_cards_to_deck(self.discard_pot)
         self.dealer.deck.shuffle()
 
     def exit_game(self):
@@ -345,8 +384,21 @@ class Game():
             (bool) : True if exit game, False if keep on playing
         '''
         exit_game = pyip.inputMenu(
-            ['Exit game', 'Keep on playing'], numbered=True)
+            ['Exit game', 'Keep on playing'], numbered=True
+        )
         if exit_game == 'Exit game':
             return True
         else:
             return False
+
+    def gain_losses(self, player_original_cash_balance):
+        '''Gain losses
+
+        Gain losses method, checks the gains or losses of the player.
+        Args:
+            player_original_cash_balance (int) : player original cash balance
+
+        Returns:
+            (int) : Gain or losses amount
+        '''
+        return abs(self.player.cash_balance - player_original_cash_balance)

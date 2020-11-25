@@ -59,10 +59,9 @@ class TestDeck(unittest.TestCase):
             'Deck does not have 52 cards. Check the suits, ranks and values, global variables for any discrepency.'
         )
 
-    def test_deck_imlements_multiple(sefl):
+    def test_deck_imlements_multiple(self):
         self.assertEqual(
-            len(self.self.deck_multiple), 520,
-            'Multiple decks not implemented.'
+            len(self.deck_multiple), 520, 'Multiple decks not implemented.'
         )
 
     def test_deck_shuffle_different_than_original_deck(self):
